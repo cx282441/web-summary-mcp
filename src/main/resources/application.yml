@@ -1,5 +1,11 @@
 spring:
   application:
     name: web-summary-mcp
+  ai:
+    mcp:
+      server:
+        enabled: true
+        protocol: streamable
+
 server:
   port: 8080
