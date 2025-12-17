@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: web-summary-mcp
+server:
+  port: 8080
