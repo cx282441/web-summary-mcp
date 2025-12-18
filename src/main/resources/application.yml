@@ -5,7 +5,19 @@ spring:
     mcp:
       server:
         enabled: true
-        protocol: streamable
+        protocol: sse
+        name: ${spring.application.name}
+        sse-endpoint: /sse
+        capabilities:
+          tool: true
+        sse-message-endpoint: /mcp/message
+
+
 
 server:
   port: 8080
+### 开启MCP服务器日志
+logging:
+  level:
+    org.springframework.ai.mcp: TRACE
+    io.modelcontextprotocol: TRACE
