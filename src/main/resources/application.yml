@@ -7,7 +7,7 @@ spring:
         enabled: true
         protocol: sse
         name: ${spring.application.name}
-        sse-endpoint: /sse
+        sse-endpoint: /
         capabilities:
           tool: true
         sse-message-endpoint: /mcp/message
