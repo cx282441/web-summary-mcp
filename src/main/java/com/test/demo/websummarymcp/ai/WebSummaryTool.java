@@ -1,11 +1,16 @@
 package com.test.demo.websummarymcp.ai;
 
 import jakarta.servlet.http.HttpServletRequest;
+import net.dankito.readability4j.Readability4J;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springaicommunity.mcp.annotation.McpTool;
 import org.springaicommunity.mcp.annotation.McpToolParam;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.stream.Collectors;
 
 @Component
 public class WebSummaryTool {
@@ -16,18 +21,25 @@ public class WebSummaryTool {
     ) {
 
         // 1. 获取钉钉 Header
-        ServletRequestAttributes attrs =
-                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        try {
+            Document doc = Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0")
+                    .timeout(10000)
+                    .get();
 
-        if (attrs != null) {
-            HttpServletRequest request = attrs.getRequest();
-            String userId = request.getHeader("X-DingTalk-User-Id");
-            String jobNumber = request.getHeader("X-DingTalk-User-Job-Number");
+            Readability4J readability = new Readability4J(url, doc.html());
+            String text = readability.parse().getTextContent();
 
-            System.out.println("userId=" + userId + ", jobNumber=" + jobNumber);
+            if (text == null || text.isBlank()) {
+                return "未能提取到网页正文内容";
+            }
+
+            return text.lines()
+                    .limit(10)
+                    .collect(Collectors.joining("\n"));
+
+        } catch (Exception e) {
+            return "网页解析失败：" + e.getMessage();
         }
-
-        // 2. Tool 只做兜底或快速总结
-        return "请结合 webpage://content Resource 和 web_summary_prompt 进行总结";
     }
 }
